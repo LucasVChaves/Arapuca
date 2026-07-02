@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# Para as VMs
+*.iso
+*.qcow2
+
 # Distribution / packaging
 .Python
 build/
