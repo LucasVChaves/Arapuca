@@ -69,7 +69,7 @@ class MockRansomware:
         with sqlite3.connect(self.db_path) as db_conn:
             db_conn.execute(
                     "INSERT INTO metrics (encrypted_files, network_attempts, elapsed_time) VALUES (?, ?, ?)",
-                (self.encrypted_count, self.network_attempts, elapsed_time)
+                (self.encrypted_count, self.net_attempts, elapsed_time)
                 )
 
     async def execute(self):
