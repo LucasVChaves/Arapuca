@@ -14,23 +14,23 @@ for s in "${subdirs[@]}"; do
     mkdir -p "$TARGET_DIR/$s"
 done
 
-written_mb=0
+written_kb=0
+target_kb=$(( TARGET_MB * 1024 ))
 i=0
-while (( written_mb < TARGET_MB )); do
+while (( written_kb < target_kb )); do
     i=$((i+1))
     sub="${subdirs[$((RANDOM % ${#subdirs[@]}))]}"
     ext="${extensions[$((RANDOM % ${#extensions[@]}))]}"
     size_kb=$(( (RANDOM % 500) + 10 ))   # 10KB - 510KB per file
     fname="$TARGET_DIR/$sub/doc_$(printf '%05d' $i).$ext"
-
     # Low-entropy text
     yes "Line $i - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Report data value $((RANDOM))." \
-        | head -c "${size_kb}K" > "$fname"
-
-    written_mb=$(( written_mb + size_kb / 1024 + 1 ))
+        | head -c "${size_kb}K" > "$fname" || true
+    written_kb=$(( written_kb + size_kb ))
     if (( i % 100 == 0 )); then
-        echo "Written $i files, ~${written_mb}MB so far..."
+        echo "Written $i files, ~$(( written_kb / 1024 ))MB so far..."
     fi
 done
+echo "Done: $i files, ~$(( written_kb / 1024 ))MB in $TARGET_DIR"
 
-echo "Done: $i files, ~${written_mb}MB in $TARGET_DIR"
+
