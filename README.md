@@ -16,36 +16,19 @@ Para o test bed desta ferramenta utilizamos o QEMU, que quebra um galho fornecen
 
 O isolamento do sandbox e a divisão de subredes corporativas (Zona A) e industriais (Zona B) serão implementados via barramento de rede virtual nativo do QEMU, utilizando o argumento `-netdev socket`. Este modo cria uma rede multicast interna entre as VMs, isolando completamente o host e eliminando o risco de vazamento do malware.
 
+### Criação do Test Bed
+
+Para criar o test bed, execute o script `create_testbed.sh` certificando-se de ter a ISO de uma distro Linux numa pasta `/vms` na raiz do projeto. Para este projeto recomendamos o Alpine por ser leve e fácil de instalar.
+
+> Você pode optar por baixar as VMs já prontas e configuradas no drive.
+
+Os assests para o test bed, como imagem do alpine e VMs QEMU prontas estão disponíveis no [drive](https://drive.google.com/drive/folders/1VLGKYvAuvbciTpMi-WMMSg_Rqzsjn0is?usp=sharing).
+
 ### Inicialização das VMs
 
-Script de inicialização das VMs QEMU baseadas em x86_64:
+Para inicializar as VMs, execute o script `init_testbed.sh` com as imagens das VMs na pasta `/vms`.
 
-```bash
-#!/bin/bash
-# Variaveis
-QEMU_BIN="qemu-system-x86_64"
-RAM="2048"
-CORES="2"
-IMAGE_DIR="./vms"
-
-# VM-01 Atacante (Zona A)
-$QEMU_BIN -m $RAM -smp $CORES -drive file=$IMAGE_DIR/vm01_attacker.qcow2,format=qcow2 \
-  -netdev socket,id=it_net,mcast=230.0.0.1:1234 \
-  -device e1000,netdev=it_net,mac=52:54:00:12:34:01 &
-
-# VM-02 Vitima (Zona A) (Dual-Homed para atuar como Gateway ZTA)
-# Possui duas placas: uma na rede IT (mcast 1) e uma na rede OT (mcast 2)
-$QEMU_BIN -m $RAM -smp $CORES -drive file=$IMAGE_DIR/vm02_victim.qcow2,format=qcow2 \
-  -netdev socket,id=it_net,mcast=230.0.0.1:1234 \
-  -device e1000,netdev=it_net,mac=52:54:00:12:34:02 \
-  -netdev socket,id=ot_net,mcast=230.0.0.2:5678 \
-  -device e1000,netdev=ot_net,mac=52:54:00:56:78:02 &
-
-# 3. VM-03 Chao de Fabrica (Zona B)
-$QEMU_BIN -m $RAM -smp $CORES -drive file=$IMAGE_DIR/vm03_ot_asset.qcow2,format=qcow2 \
-  -netdev socket,id=ot_net,mcast=230.0.0.2:5678 \
-  -device e1000,netdev=ot_net,mac=52:54:00:56:78:03 &
-```
+O login padrão para todas as VMs é `root` com senha sendo o nome da VM (e.g. `attacker`, `victim`, `ot`).
 
 ## A ferramenta Arapuca
 

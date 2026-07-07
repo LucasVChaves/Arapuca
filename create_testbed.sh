@@ -18,7 +18,7 @@ ISO_FILE=$(find "$BASE_DIR" -maxdepth 1 -name "*.iso" | head -n 1)
 if [ -z "$ISO_FILE" ]; then
     echo "[ERROR] No ISO image found in $BASE_DIR."
     echo " -> Please download an Arch Linux ISO and move it to $BASE_DIR before running this script."
-    echo " -> Example: wget https://mirrors.ic.unicamp.br/archlinux/iso/2026.07.01/archlinux-2026.07.01-x86_64.iso -P $BASE_DIR"
+    echo " -> Example: wget https://dl-cdn.alpinelinux.org/alpine/latest-stable/releases/x86_64/alpine-standard-3.24.1-x86_64.iso -P $BASE_DIR"
     exit 1
 fi
 
@@ -37,6 +37,7 @@ setup_vm() {
     fi
 
     $QEMU_BIN $KVM_FLAG -m $RAM -smp $CORES \
+      -display gtk \
       -drive file="$DISK_FILE",format=qcow2 \
       -cdrom "$ISO_FILE" \
       -boot d &
