@@ -220,3 +220,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+archlinux-2026.07.01-x86_64.iso
+vm02_victim.qcow2
